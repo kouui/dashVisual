@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("./data/gapminderDataFiveYear.csv")
+df = pd.read_csv("./dashboard/data/gapminderDataFiveYear.csv")
 default_country = 'Afghanistan'
 
 def _get_sub_df(_key="country", _value=default_country, _sort_key="year", _as=True):
@@ -35,7 +35,7 @@ def _get_pie_data(_year):
 
 
 if __name__ == "__main__":
-    # debug this script at dashVisual/dashboard/
+    # debug this script at dashVisual
     df1 = _get_sub_df()
     country_list = _get_countries()
     print(_get_pie_data(1962))

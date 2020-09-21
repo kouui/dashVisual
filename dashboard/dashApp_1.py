@@ -11,7 +11,9 @@ from dash.dependencies import Input, Output, State
 
 import plotly.graph_objs as go
 
-from debug import pandas_df_util as pdutil
+from .debug import pandas_df_util as pdutil
+
+from django_plotly_dash import DjangoDash
 
 ##----------------------------------------------------------------------------
 # test dataframe
@@ -24,7 +26,9 @@ from debug import pandas_df_util as pdutil
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = DjangoDash("dashApp_1", external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.add_bootstrap_links=True
 
 
 ##----------------------------------------------------------------------------
