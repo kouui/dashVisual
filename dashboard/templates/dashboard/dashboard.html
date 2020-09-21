@@ -3,6 +3,108 @@
 
 {% block content %}
 
-<h1>content here</h1>
+
+<div class="col-md-7" style="max-width: 1000px;">
+    <div class="plot-container-1" data-num="0">
+        <div id="plotdiv"></div>
+        <hr>
+        <div>
+          Country: <select class="countrydata"></select>
+        </div>
+    </div>
+</div>
+<script>
+/* JAVASCRIPT CODE GOES HERE */
+
+Plotly.d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv', function(err, rows){
+
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+    }
+
+var allCountryNames = unpack(rows, 'country'),
+    allYear = unpack(rows, 'year'),
+    allGdp = unpack(rows, 'gdpPercap'),
+    listofCountries = [],
+    currentCountry,
+    currentGdp = [],
+    currentYear = [];
+
+  for (var i = 0; i < allCountryNames.length; i++ ){
+    if (listofCountries.indexOf(allCountryNames[i]) === -1 ){
+      listofCountries.push(allCountryNames[i]);
+    }
+  }
+
+  function getCountryData(chosenCountry) {
+    currentGdp = [];
+    currentYear = [];
+    for (var i = 0 ; i < allCountryNames.length ; i++){
+      if ( allCountryNames[i] === chosenCountry ) {
+        currentGdp.push(allGdp[i]);
+        currentYear.push(allYear[i]);
+      }
+    }
+  };
+
+// Default Country Data
+setBubblePlot('Afghanistan');
+
+function setBubblePlot(chosenCountry) {
+    getCountryData(chosenCountry);
+
+    var trace1 = {
+      x: currentYear,
+      y: currentGdp,
+      mode: 'lines+markers',
+      marker: {
+        size: 12,
+        opacity: 0.5
+      }
+    };
+
+    var data = [trace1];
+
+    var layout = {
+//      autosize: true,
+      title: 'GDP per cap according to Country<br>'+ chosenCountry + ' GDP',
+//      margin: {
+//        t: 40, //top margin
+//        l: 40, //left margin
+//        r: 20, //right margin
+//        b: 20 //bottom margin
+//        }
+    };
+
+    var config = {
+        responsive: true,
+        showSendToCloud: true
+    };
+
+    Plotly.newPlot('plotdiv', data, layout, config);
+};
+
+var innerContainer = document.querySelector('[data-num="0"'),
+    plotEl = innerContainer.querySelector('.plot'),
+    countrySelector = innerContainer.querySelector('.countrydata');
+
+function assignOptions(textArray, selector) {
+  for (var i = 0; i < textArray.length;  i++) {
+      var currentOption = document.createElement('option');
+      currentOption.text = textArray[i];
+      selector.appendChild(currentOption);
+  }
+}
+
+assignOptions(listofCountries, countrySelector);
+
+function updateCountry(){
+    setBubblePlot(countrySelector.value);
+}
+
+countrySelector.addEventListener('change', updateCountry, false);
+});
+
+</script>
 
 {% endblock %}
