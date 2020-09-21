@@ -6,20 +6,25 @@
 <div class="container-fluid">
     <div class="row">
 
-        <div class="col-md-2"></div>
+        <div class="col-md-1"></div>
 
         <!--<div class="col-md-7" style="max-width: 1000px;">-->
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="plot-container-1" data-num="0">
-                <div id="plotdiv"></div>
+                    <div id="plotdiv"></div>
                 <hr>
-                <div>
-                  Country: <select class="countrydata"></select>
-                </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            X : <select class="countrydata-x"></select>
+                        </div>
+                        <div class="col-md-4">
+                            Y : <select class="countrydata-y"></select>
+                        </div>
+                    </div>
             </div>
         </div>
 
-        <div class="col-md-2"></div>
+        <div class="col-md-1"></div>
 
     </div>
 </div>
@@ -57,33 +62,30 @@ var allCountryNames = unpack(rows, 'country'),
     }
   };
 
-// Default Country Data
-initBubblePlot('Afghanistan');
-
 function initBubblePlot(chosenCountry) {
     getCountryData(chosenCountry);
 
     var trace1 = {
       x: currentYear,
       y: currentGdp,
-      mode: 'lines+markers',
+      mode: 'markers+lines',
+      line: {
+          opacity : 0.8,
+          color : "black",
+      },
       marker: {
         size: 12,
-        opacity: 0.5
+        opacity: 0.5,
+        color : "black"
       }
     };
 
     var data = [trace1];
 
     var layout = {
-//      autosize: true,
-//      margin: {
-//        t: 40, //top margin
-//        l: 40, //left margin
-//        r: 20, //right margin
-//        b: 20 //bottom margin
-//        }
-      title: 'GDP per cap according to Country<br>'+ chosenCountry + ' GDP',
+      //autosize: true,
+      //title: 'GDP per cap according to Country<br>'+ chosenCountry + ' GDP',
+      title: 'GDP per cap according to Country',
       xaxis: {
           autorange: true,
           showgrid: true,
@@ -112,23 +114,44 @@ function initBubblePlot(chosenCountry) {
     Plotly.newPlot('plotdiv', data, layout, config);
 };
 
-function updateBubblePlot(chosenCountry) {
-    getCountryData(chosenCountry);
+function updateBubblePlot(chosenCountry, axis) {
 
-    var update = {
-        x : [currentYear],
-        y : [currentGdp],
-        //mode: 'markers',
-        //'marker.color': 'red'
-    };
-
+    if (chosenCountry!="Year") {
+        getCountryData(chosenCountry);
+        if (axis=='x') {
+            var update = {
+                x : [currentGdp],
+                mode: 'markers',
+            };
+        } else if (axis=="y") {
+            var update = {
+                y : [currentGdp],
+            };
+        } else {
+            var update = {};
+        }
+    } else {
+        getCountryData(countrySelector_y.value);
+        if (axis=='x') {
+            console.log("update year x");
+            var update = {
+                x : [currentYear],
+                mode: 'markers+lines',
+            };
+        } else {
+            var update = {};
+        }
+    }
     Plotly.restyle('plotdiv', update, 0);
 };
 
+// Default Country Data
+initBubblePlot('Afghanistan');
 
 var innerContainer = document.querySelector('[data-num="0"'),
     //plotEl = innerContainer.querySelector('.plot'),
-    countrySelector = innerContainer.querySelector('.countrydata');
+    countrySelector_x = innerContainer.querySelector('.countrydata-x');
+    countrySelector_y = innerContainer.querySelector('.countrydata-y');
 
 function assignOptions(textArray, selector) {
   for (var i = 0; i < textArray.length;  i++) {
@@ -138,13 +161,26 @@ function assignOptions(textArray, selector) {
   }
 }
 
-assignOptions(listofCountries, countrySelector);
-
-function updateCountry(){
-    updateBubblePlot(countrySelector.value);
+function assignOptionString(s, selector) {
+      var currentOption = document.createElement('option');
+      currentOption.text = s;
+      selector.appendChild(currentOption);
 }
 
-countrySelector.addEventListener('change', updateCountry, false);
+
+assignOptionString("Year", countrySelector_x);
+assignOptions(listofCountries, countrySelector_x);
+assignOptions(listofCountries, countrySelector_y);
+
+function updateCountry_x(){
+    updateBubblePlot(countrySelector_x.value, 'x');
+}
+function updateCountry_y(){
+    updateBubblePlot(countrySelector_y.value, 'y');
+}
+
+countrySelector_x.addEventListener('change', updateCountry_x, false);
+countrySelector_y.addEventListener('change', updateCountry_y, false);
 });
 
 </script>
