@@ -27,8 +27,9 @@ from django_plotly_dash import DjangoDash
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 #app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app = DjangoDash("dashApp_1", external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.add_bootstrap_links=True
+app = DjangoDash("dashApp_1", external_stylesheets=[dbc.themes.BOOTSTRAP],
+                 #serve_locally=True,
+                 add_bootstrap_links=True)
 
 
 ##----------------------------------------------------------------------------
@@ -106,12 +107,12 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(controls, md=2),
-                dbc.Col(dcc.Graph(id="plot1-graph"), md=5),
+                dbc.Col(dcc.Graph(id="plot1-graph"), md=4),
                 dbc.Col(dcc.Graph(id="plot2-graph"), md=5),
             ],
             align="center",
         ),
-        ],body=True),md=12),
+        ],body=True),md=11),
     ],
     fluid=True,
 )
