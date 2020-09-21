@@ -58,9 +58,9 @@ var allCountryNames = unpack(rows, 'country'),
   };
 
 // Default Country Data
-setBubblePlot('Afghanistan');
+initBubblePlot('Afghanistan');
 
-function setBubblePlot(chosenCountry) {
+function initBubblePlot(chosenCountry) {
     getCountryData(chosenCountry);
 
     var trace1 = {
@@ -77,13 +77,31 @@ function setBubblePlot(chosenCountry) {
 
     var layout = {
 //      autosize: true,
-      title: 'GDP per cap according to Country<br>'+ chosenCountry + ' GDP',
 //      margin: {
 //        t: 40, //top margin
 //        l: 40, //left margin
 //        r: 20, //right margin
 //        b: 20 //bottom margin
 //        }
+      title: 'GDP per cap according to Country<br>'+ chosenCountry + ' GDP',
+      xaxis: {
+          autorange: true,
+          showgrid: true,
+          zeroline: false,
+          showline: true,
+          autotick: true,
+          ticks: 'inside',
+          showticklabels: true
+      },
+      yaxis: {
+          autorange: true,
+          showgrid: true,
+          zeroline: false,
+          showline: true,
+          autotick: true,
+          ticks: 'inside',
+          showticklabels: true
+      }
     };
 
     var config = {
@@ -94,8 +112,22 @@ function setBubblePlot(chosenCountry) {
     Plotly.newPlot('plotdiv', data, layout, config);
 };
 
+function updateBubblePlot(chosenCountry) {
+    getCountryData(chosenCountry);
+
+    var update = {
+        x : [currentYear],
+        y : [currentGdp],
+        //mode: 'markers',
+        //'marker.color': 'red'
+    };
+
+    Plotly.restyle('plotdiv', update, 0);
+};
+
+
 var innerContainer = document.querySelector('[data-num="0"'),
-    plotEl = innerContainer.querySelector('.plot'),
+    //plotEl = innerContainer.querySelector('.plot'),
     countrySelector = innerContainer.querySelector('.countrydata');
 
 function assignOptions(textArray, selector) {
@@ -109,7 +141,7 @@ function assignOptions(textArray, selector) {
 assignOptions(listofCountries, countrySelector);
 
 function updateCountry(){
-    setBubblePlot(countrySelector.value);
+    updateBubblePlot(countrySelector.value);
 }
 
 countrySelector.addEventListener('change', updateCountry, false);
