@@ -1,0 +1,25 @@
+to start a project
+
+$ django-admin startproject dashVisual
+
+to start a application
+
+$ python manage.py startapp dashboard
+
+to run the server
+
+$ python manage.py runserver
+
+to activate the admin panel
+
+$ python manage.py makemigrations
+$ python manage.py migrate
+$ python manage.py createsuperuser
+id : superuser
+pw : superusersuperuser
+- create groups : admin, guest
+- assign user `superuser` to group admin
+- use login form to create user
+id : guest
+pw : guestguest
+- assign user `guest` to group guest
