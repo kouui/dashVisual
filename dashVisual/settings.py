@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'dashboard',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
