@@ -23,3 +23,6 @@ pw : superusersuperuser
 id : guest
 pw : guestguest
 - assign user `guest` to group guest
+
+to install postgres database binary in macOS
+$ brew install postgresql
