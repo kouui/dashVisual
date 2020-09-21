@@ -11,8 +11,8 @@ from .decorators import unauthenticated_user, allowed_users
 # Create your views here.
 
 
-#@login_required(login_url='login')
-#@allowed_users(allowed_roles=["admin", "guest"])
+@login_required(login_url='login')
+@allowed_users(allowed_roles=["admin", "guest"])
 def home(request):
     return render(request, "dashboard/dashboard.html")
 
