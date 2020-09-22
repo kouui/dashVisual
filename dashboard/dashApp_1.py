@@ -11,9 +11,8 @@ from dash.dependencies import Input, Output, State
 
 import plotly.graph_objs as go
 
-from .debug import pandas_df_util as pdutil
+import os
 
-from django_plotly_dash import DjangoDash
 
 ##----------------------------------------------------------------------------
 # test dataframe
@@ -25,11 +24,21 @@ from django_plotly_dash import DjangoDash
 ##----------------------------------------------------------------------------
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets=[dbc.themes.BOOTSTRAP]
+#external_stylesheets = ["https://raw.githubusercontent.com/kouui/external-files/master/css/mybootstrap.dash.min.css"]
+#external_stylesheets = [ "/Users/liu/kouui/python/django/dashVisual/dashboard/data/bootstrap.min.css" ]
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app = DjangoDash("dashApp_1", external_stylesheets=[dbc.themes.BOOTSTRAP],
-                 #serve_locally=True,
-                 add_bootstrap_links=True)
+_Debug = False
+if _Debug:
+    from debug import pandas_df_util as pdutil
+    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    #app = dash.Dash(__name__)
+else:
+    from .debug import pandas_df_util as pdutil
+    from django_plotly_dash import DjangoDash
+    app = DjangoDash("dashApp_1", external_stylesheets=external_stylesheets,
+                     #serve_locally=True,
+                     add_bootstrap_links=True)
 
 
 ##----------------------------------------------------------------------------
@@ -97,22 +106,59 @@ controls = dbc.Card(
     body=True,
 )
 
+controls_2 = dbc.Row(
+                [
+                    dbc.Label("Continent", width=2),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id="plot3-continent",
+                            options=[
+                                {"label": val, "value": val} for val in pdutil._get_continents()
+                            ],
+                            value=pdutil._get_continents()[0],
+                            multi=True,
+                        ),
+                        width=10,
+                    ),
+                ]
+            )
+
 app.layout = dbc.Container(
     [
         html.H1(""),
         html.Hr(),
 
 
-        dbc.Col(dbc.Card([
-        dbc.Row(
-            [
-                dbc.Col(controls, md=2),
-                dbc.Col(dcc.Graph(id="plot1-graph"), md=4),
-                dbc.Col(dcc.Graph(id="plot2-graph"), md=5),
-            ],
-            align="center",
-        ),
-        ],body=True),md=11),
+        dbc.Col([
+
+            dbc.Card([
+                dbc.Row(
+                    [
+                        dbc.Col(controls, md=2),
+                        dbc.Col(dcc.Graph(id="plot1-graph"), md=4),
+                        dbc.Col(dcc.Graph(id="plot2-graph"), md=5),
+                    ],
+                    align="center",
+                ),
+            ],body=True),
+
+            html.Br(),
+
+            dbc.Card([
+                controls_2,
+                dbc.Table(children=None, id="plot3-table",
+                          bordered=True, striped=True,
+                          #className="data-table",
+                          style = {
+                            "height" : "300px",
+                            "overflow" : "auto",
+                            "display" : "block"
+                          },
+                ),
+            ],body=True),
+
+        ],md=11),
+
     ],
     fluid=True,
 )
@@ -214,6 +260,33 @@ def _make_plot2(_year):
 
     return go.Figure(data=_data, layout=_layout)
 
+##----------------------------------------------------------------------------
+# make table
+##----------------------------------------------------------------------------
+@app.callback(
+        Output("plot3-table", "children"),
+        [
+            Input("plot3-continent", "value"),
+        ],
+)
+def _make_plot3(_value):
+    if not isinstance(_value, list):
+        _value = [_value,]
+
+    _df1 = pdutil._get_sub_df(_key="continent", _value=_value, _sort_key=None)
+
+    _table_header = [
+        html.Thead(html.Tr( [html.Th(_col) for _col in _df1.columns] ))
+    ]
+
+    _body_list = []
+    for _index, _row in _df1.iterrows():
+        _body_list.append(
+            html.Tr([ html.Td(_row[_col]) for _col in _df1.columns ])
+        )
+    _table_body = [html.Tbody(_body_list)]
+
+    return _table_header + _table_body
 
 ##----------------------------------------------------------------------------
 # disable duplicated option in dropdown menu

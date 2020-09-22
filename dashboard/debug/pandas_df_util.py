@@ -5,7 +5,13 @@ default_country = 'Afghanistan'
 
 def _get_sub_df(_key="country", _value=default_country, _sort_key="year", _as=True):
 
-    _df1 = df[df[_key]==_value]
+    #-- filter
+    if _key == "continent":
+        _df1 = df[df[_key].isin(_value)]
+    else:
+        _df1 = df[df[_key]==_value]
+
+    #-- sort
     if _sort_key is not None:
         _df1 = _df1.sort_values(by=_sort_key, ascending=_as)
 
@@ -16,6 +22,9 @@ def _get_countries():
 
 def _get_years():
     return sorted( list( df["year"].unique() ) )
+
+def _get_continents():
+    return df["continent"].unique().tolist()
 
 def _get_x_variables():
     return ["year", "pop", "lifeExp", "gdpPercap"]
@@ -38,4 +47,6 @@ if __name__ == "__main__":
     # debug this script at dashVisual
     df1 = _get_sub_df()
     country_list = _get_countries()
-    print(_get_pie_data(1962))
+    #print(_get_pie_data(1962))
+    df1 = _get_sub_df(_key="continent", _value=["Asia"], _sort_key=None)
+    print(df1.columns.tolist())
